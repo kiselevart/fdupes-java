@@ -8,7 +8,13 @@ import io.muzoo.ssc.assignment.tracker.SscAssignment;
 
 public class Main extends SscAssignment {
     public static void main(String[] args) {
-        Path path = Paths.get("/home/artem/ssc/java-docs");
+        if (args.length != 1) {
+            System.err.println("Enter a path");
+            System.exit(1);
+        }
+
+        String pathArg = args[0];
+        Path path = Paths.get(pathArg);
         final int[] fileCount = {0};
 
         try {
@@ -34,6 +40,3 @@ public class Main extends SscAssignment {
         System.out.println(fileCount[0]);
     }
 }
-
-
-
