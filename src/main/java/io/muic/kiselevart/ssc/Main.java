@@ -1,10 +1,14 @@
 package io.muic.kiselevart.ssc;
 
 import java.io.IOException;
+import java.util.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
 import io.muzoo.ssc.assignment.tracker.SscAssignment;
 import org.apache.commons.cli.*;
+import org.apache.commons.io.IOUtils;
+
+import java.util.function.Function;
 
 public class Main extends SscAssignment {
     public static void main(String[] args) {
@@ -25,12 +29,14 @@ public class Main extends SscAssignment {
                 final int[] fileCount = {0};
 
                 countFiles(path, fileCount);
-                System.out.println("The total number of files is: ");
-                System.out.println(fileCount[0]);
+                if (cmd.hasOption("c")) {
+                    countDuplicates(path, ___);    
+                }
             }
             else {
                 throw new ParseException("File path -f is required.");
             }
+
         }
         catch (ParseException e) {
             System.err.println("Error: " + e.getMessage());
@@ -59,5 +65,41 @@ public class Main extends SscAssignment {
             System.err.println("An error occurred: " + e.getMessage());
             e.printStackTrace();
         }
+
+        System.out.println("Total number of files is: " + fileCount[0]);
+    }
+
+    private static void countDuplicates(Path path, Function<Path, String> checksumAlgorithm) {
+        Map<String, Integer> checksumMap = new HashMap<>();
+
+        try {
+            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    String checksum = checksumAlgorithm.apply(file);
+                    checksumMap.put(checksum, checksumMap.getOrDefault(checksum, 0) + 1);
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override 
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                    System.err.println("Failed to access: " + file.toString() + " due to " + exc.getMessage());
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        }
+        catch (IOException e) {
+            System.err.println("An error occurred: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        int totalDuplicates = 0;
+        for (int count : checksumMap.values()) {
+            if (count > 1) {
+                totalDuplicates += count-1;
+            }
+        }
+
+        System.out.println("The total number of duplicate files is: " + totalDuplicates);
     }
 }
