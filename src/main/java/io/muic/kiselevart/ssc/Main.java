@@ -1,14 +1,13 @@
 package io.muic.kiselevart.ssc;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
 import io.muzoo.ssc.assignment.tracker.SscAssignment;
 import org.apache.commons.cli.*;
-import org.apache.commons.io.IOUtils;
-
 import java.util.function.Function;
+import java.security.*;
 
 public class Main extends SscAssignment {
     public static void main(String[] args) {
@@ -24,28 +23,46 @@ public class Main extends SscAssignment {
         try {
             CommandLine cmd = parser.parse(options, args);
             String pathArg = cmd.getOptionValue("f");
+
             if (pathArg != null) {
                 Path path = Paths.get(pathArg);
-                final int[] fileCount = {0};
 
-                countFiles(path, fileCount);
+                countFiles(path);
+
                 if (cmd.hasOption("c")) {
-                    countDuplicates(path, ___);    
+                    String algorithm = cmd.getOptionValue("a", "md5");
+                    Function<Path, String> checksumCalculator;
+
+                    switch (algorithm.toLowerCase()) {
+                        case "bbb":
+                            checksumCalculator = Main::calculateByteChecksum;
+                            break;
+                        case "md5":
+                            checksumCalculator = Main::calculateMD5;
+                            break;
+                        case "sha256":
+                            checksumCalculator = Main::calculateSHA256;
+                            break;
+                        default:
+                            throw new ParseException("Invalid algorithm specified.");
+                    }
+
+                    countDuplicates(path, checksumCalculator);
                 }
             }
             else {
                 throw new ParseException("File path -f is required.");
             }
 
-        }
-        catch (ParseException e) {
+        } catch (ParseException e) {
             System.err.println("Error: " + e.getMessage());
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("myapp", options);
         }
     }
 
-    private static void countFiles(Path path, final int[] fileCount) {
+    private static void countFiles(Path path) {
+        final int[] fileCount = new int[1];
         try {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                 @Override
@@ -87,8 +104,7 @@ public class Main extends SscAssignment {
                     return FileVisitResult.CONTINUE;
                 }
             });
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.err.println("An error occurred: " + e.getMessage());
             e.printStackTrace();
         }
@@ -101,5 +117,43 @@ public class Main extends SscAssignment {
         }
 
         System.out.println("The total number of duplicate files is: " + totalDuplicates);
+    }
+
+    private static String calculateByteChecksum(Path file) {
+        try {
+            byte[] content = Files.readAllBytes(file);
+            return Arrays.toString(content);
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + file.toString() + ". " + e.getMessage());
+            throw new RuntimeException("Error reading file: " + file.toString(), e);
+        }
+    }
+
+    private static String calculateMD5(Path file) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(Files.readAllBytes(file));
+            StringBuilder result = new StringBuilder();
+            for (byte b : digest) {
+                result.append(String.format("%02x", b));
+            }
+            return result.toString();
+        } catch (IOException | NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error calculating MD5 checksum", e);
+        }
+    }
+
+    private static String calculateSHA256(Path file) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(Files.readAllBytes(file));
+            StringBuilder result = new StringBuilder();
+            for (byte b : digest) {
+                result.append(String.format("%02x", b));
+            }
+            return result.toString();
+        } catch (IOException | NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error calculating SHA-256 checksum", e);
+        }
     }
 }
