@@ -6,7 +6,6 @@ import java.nio.file.attribute.*;
 import io.muzoo.ssc.assignment.tracker.SscAssignment;
 import org.apache.commons.cli.*;
 
-
 public class Main extends SscAssignment {
     public static void main(String[] args) {
         Options options = new Options();
@@ -15,11 +14,19 @@ public class Main extends SscAssignment {
         options.addOption("p", "print", false, "prints relative paths of all duplicates grouped together");
         options.addOption("f", true, "specifies path to folder, must be provided.");
 
+        //String.format("%,d", 2000000) for future reference, this is how to comma format numbers
+
         CommandLineParser parser = new DefaultParser();
         try {
             CommandLine cmd = parser.parse(options, args);
-            if (cmd.hasOption("f")) {
-                System.out.println("good");
+            String pathArg = cmd.getOptionValue("f");
+            if (pathArg != null) {
+                Path path = Paths.get(pathArg);
+                final int[] fileCount = {0};
+
+                countFiles(path, fileCount);
+                System.out.println("The total number of files is: ");
+                System.out.println(fileCount[0]);
             }
             else {
                 throw new ParseException("File path -f is required.");
@@ -30,11 +37,9 @@ public class Main extends SscAssignment {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("myapp", options);
         }
+    }
 
-        String pathArg = args[0];
-        Path path = Paths.get(pathArg);
-        final int[] fileCount = {0};
-
+    private static void countFiles(Path path, final int[] fileCount) {
         try {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                 @Override
@@ -54,7 +59,5 @@ public class Main extends SscAssignment {
             System.err.println("An error occurred: " + e.getMessage());
             e.printStackTrace();
         }
-        
-        System.out.println(fileCount[0]);
     }
 }
