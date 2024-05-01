@@ -17,8 +17,6 @@ public class Main extends SscAssignment {
         options.addOption("p", "print", false, "prints relative paths of all duplicates grouped together");
         options.addOption("f", true, "specifies path to folder, must be provided.");
 
-        //String.format("%,d", 2000000) for future reference, this is how to comma format numbers
-
         CommandLineParser parser = new DefaultParser();
         try {
             CommandLine cmd = parser.parse(options, args);
@@ -29,7 +27,7 @@ public class Main extends SscAssignment {
 
                 countFiles(path);
 
-                String algorithm = cmd.getOptionValue("a", "sha256"); //by default uses sha256
+                String algorithm = cmd.getOptionValue("a", "sha256"); //if no algorithm provided, sha256 is used by default
                 Function<Path, String> checksumCalculator;
 
                 switch (algorithm.toLowerCase()) {
@@ -69,11 +67,23 @@ public class Main extends SscAssignment {
         }
     }
 
+    /**
+     * Formats an integer into a string with thousands separators
+     * 
+     * @param number The number to format
+     * @return The formatted string 
+     */
     private static String formattedValue(int number) {
         return formattedValue((long) number);
     }
 
-    public static String formattedValue(long number) {
+    /**
+     * Formats a long into a string with thousands separators
+     * 
+     * @param number The number to format
+     * @return The formatted string 
+     */
+    public static String formattedValue(long number) { 
         String numberString = String.valueOf(number);
         StringBuilder formattedNumber = new StringBuilder();
 
@@ -94,7 +104,7 @@ public class Main extends SscAssignment {
     private static void countFiles(Path path) {
         final int[] fileCount = new int[1];
         final int[] directoryCount = new int[1];
-        final long[] totalSize = new long[1]; // Variable to store total size
+        final long[] totalSize = new long[1]; // Variable to store total size of all files
 
         try {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
