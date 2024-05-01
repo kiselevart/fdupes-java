@@ -69,6 +69,28 @@ public class Main extends SscAssignment {
         }
     }
 
+    private static String formattedValue(int number) {
+        return formattedValue((long) number);
+    }
+
+    public static String formattedValue(long number) {
+        String numberString = String.valueOf(number);
+        StringBuilder formattedNumber = new StringBuilder();
+
+        int length = numberString.length();
+        int commas = (length - 1) / 3;
+
+        for (int i = 0; i < length; i++) {
+            formattedNumber.append(numberString.charAt(i));
+            if ((length - i - 1) % 3 == 0 && commas > 0) {
+                formattedNumber.append(',');
+                commas--;
+            }
+        }
+
+        return formattedNumber.toString();
+    }
+
     private static void countFiles(Path path) {
         final int[] fileCount = new int[1];
         final int[] directoryCount = new int[1];
@@ -105,9 +127,9 @@ public class Main extends SscAssignment {
             e.printStackTrace();
         }
 
-        System.out.println("Total number of files is: " + fileCount[0]);
-        System.out.println("Total number of directories is: " + directoryCount[0]);
-        System.out.println("Total size of all files is: " + totalSize[0] + " bytes");
+        System.out.println("Total number of files is: " + formattedValue(fileCount[0]));
+        System.out.println("Total number of directories is: " + formattedValue(directoryCount[0]));
+        System.out.println("Total size of all files is: " + formattedValue(totalSize[0]) + " bytes");
     }
 
     private static void countDuplicates(Path path, Function<Path, String> checksumAlgorithm, boolean printCount, boolean printPaths) {
@@ -160,7 +182,7 @@ public class Main extends SscAssignment {
     
         if (printCount) {
             int totalDuplicates = checksumMap.values().stream().mapToInt(count -> count > 1 ? count - 1 : 0).sum();
-            System.out.println("The total number of duplicate files is: " + totalDuplicates);
+            System.out.println("Total number of duplicate files: " + formattedValue(totalDuplicates));
         }
     }    
 
