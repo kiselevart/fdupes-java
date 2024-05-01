@@ -29,26 +29,34 @@ public class Main extends SscAssignment {
 
                 countFiles(path);
 
-                if (cmd.hasOption("c")) {
-                    String algorithm = cmd.getOptionValue("a", "md5");
-                    Function<Path, String> checksumCalculator;
+                String algorithm = cmd.getOptionValue("a", "sha256"); //by default uses sha256
+                Function<Path, String> checksumCalculator;
 
-                    switch (algorithm.toLowerCase()) {
-                        case "bbb":
-                            checksumCalculator = Main::calculateByteChecksum;
-                            break;
-                        case "md5":
-                            checksumCalculator = Main::calculateMD5;
-                            break;
-                        case "sha256":
-                            checksumCalculator = Main::calculateSHA256;
-                            break;
-                        default:
-                            throw new ParseException("Invalid algorithm specified.");
-                    }
-
-                    countDuplicates(path, checksumCalculator);
+                switch (algorithm.toLowerCase()) {
+                    case "bbb":
+                        checksumCalculator = Main::calculateByteChecksum;
+                        break;
+                    case "md5":
+                        checksumCalculator = Main::calculateMD5;
+                        break;
+                    case "sha256":
+                        checksumCalculator = Main::calculateSHA256;
+                        break;
+                    default:
+                        throw new ParseException("Invalid algorithm specified.");
                 }
+
+                boolean printPaths = false;
+                boolean printCount = false;
+                if (cmd.hasOption("c")) {
+                    printCount = true;
+                }
+                if (cmd.hasOption("p")) {
+                    printPaths = true;
+                }
+
+                countDuplicates(path, checksumCalculator, printCount, printPaths);
+
             }
             else {
                 throw new ParseException("File path -f is required.");
@@ -63,18 +71,32 @@ public class Main extends SscAssignment {
 
     private static void countFiles(Path path) {
         final int[] fileCount = new int[1];
+        final int[] directoryCount = new int[1];
+        final long[] totalSize = new long[1]; // Variable to store total size
+
         try {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    System.out.println(file.toAbsolutePath());
                     fileCount[0]++;
+                    totalSize[0] += Files.size(file); // Accumulate the size of the file
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    directoryCount[0]++;
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
                 public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
                     System.err.println("Failed to access: " + file.toString() + " due to " + exc.getMessage());
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
                     return FileVisitResult.CONTINUE;
                 }
             });
@@ -84,21 +106,35 @@ public class Main extends SscAssignment {
         }
 
         System.out.println("Total number of files is: " + fileCount[0]);
+        System.out.println("Total number of directories is: " + directoryCount[0]);
+        System.out.println("Total size of all files is: " + totalSize[0] + " bytes");
     }
 
-    private static void countDuplicates(Path path, Function<Path, String> checksumAlgorithm) {
+    private static void countDuplicates(Path path, Function<Path, String> checksumAlgorithm, boolean printCount, boolean printPaths) {
+        if (!printCount && !printPaths) {
+            return;
+        }
+        
         Map<String, Integer> checksumMap = new HashMap<>();
-
+        Map<String, List<String>> duplicatePathsMap = new HashMap<>();
+    
         try {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     String checksum = checksumAlgorithm.apply(file);
+                    
                     checksumMap.put(checksum, checksumMap.getOrDefault(checksum, 0) + 1);
+                    
+                    if (printPaths) {
+                        List<String> paths = duplicatePathsMap.computeIfAbsent(checksum, k -> new ArrayList<>());
+                        paths.add(file.toString());
+                    }
+                    
                     return FileVisitResult.CONTINUE;
                 }
-
-                @Override 
+    
+                @Override
                 public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
                     System.err.println("Failed to access: " + file.toString() + " due to " + exc.getMessage());
                     return FileVisitResult.CONTINUE;
@@ -108,16 +144,25 @@ public class Main extends SscAssignment {
             System.err.println("An error occurred: " + e.getMessage());
             e.printStackTrace();
         }
-
-        int totalDuplicates = 0;
-        for (int count : checksumMap.values()) {
-            if (count > 1) {
-                totalDuplicates += count-1;
+    
+        if (printPaths) {
+            System.out.println("Duplicate Paths:");
+            for (Map.Entry<String, List<String>> entry : duplicatePathsMap.entrySet()) {
+                List<String> paths = entry.getValue();
+                if (paths.size() > 1) {
+                    for (String duplicatePath : paths) {
+                        System.out.println(duplicatePath);
+                    }
+                    System.out.println();
+                }
             }
         }
-
-        System.out.println("The total number of duplicate files is: " + totalDuplicates);
-    }
+    
+        if (printCount) {
+            int totalDuplicates = checksumMap.values().stream().mapToInt(count -> count > 1 ? count - 1 : 0).sum();
+            System.out.println("The total number of duplicate files is: " + totalDuplicates);
+        }
+    }    
 
     private static String calculateByteChecksum(Path file) {
         try {
