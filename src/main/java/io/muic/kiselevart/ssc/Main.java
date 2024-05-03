@@ -25,8 +25,6 @@ public class Main extends SscAssignment {
             if (pathArg != null) {
                 Path path = Paths.get(pathArg);
 
-                countFiles(path);
-
                 String algorithm = cmd.getOptionValue("a");
                 if (algorithm == null) {algorithm = "sha256";} //defaults to sha256 if -a not used 
                 Function<Path, String> checksumCalculator;
@@ -54,6 +52,7 @@ public class Main extends SscAssignment {
                     printPaths = true;
                 }
 
+                countFiles(path);
                 countDuplicates(path, checksumCalculator, printCount, printPaths);
 
             }
