@@ -27,7 +27,8 @@ public class Main extends SscAssignment {
 
                 countFiles(path);
 
-                String algorithm = cmd.getOptionValue("a", "sha256"); //if no algorithm provided, sha256 is used by default
+                String algorithm = cmd.getOptionValue("a");
+                if (algorithm == null) {algorithm = "sha256";} //defaults to sha256 if -a not used 
                 Function<Path, String> checksumCalculator;
 
                 switch (algorithm.toLowerCase()) {
@@ -67,22 +68,10 @@ public class Main extends SscAssignment {
         }
     }
 
-    /**
-     * Formats an integer into a string with thousands separators
-     * 
-     * @param number The number to format
-     * @return The formatted string 
-     */
     private static String formattedValue(int number) {
         return formattedValue((long) number);
     }
 
-    /**
-     * Formats a long into a string with thousands separators
-     * 
-     * @param number The number to format
-     * @return The formatted string 
-     */
     public static String formattedValue(long number) { 
         String numberString = String.valueOf(number);
         StringBuilder formattedNumber = new StringBuilder();
