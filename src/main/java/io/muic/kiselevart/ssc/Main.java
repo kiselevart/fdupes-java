@@ -1,13 +1,8 @@
 package io.muic.kiselevart.ssc;
 
-import java.io.*;
-import java.util.*;
 import java.nio.file.*;
-import java.nio.file.attribute.*;
 import io.muzoo.ssc.assignment.tracker.SscAssignment;
 import org.apache.commons.cli.*;
-import java.util.function.Function;
-import java.security.*;
 
 public class Main extends SscAssignment {
     public static void main(String[] args) {
