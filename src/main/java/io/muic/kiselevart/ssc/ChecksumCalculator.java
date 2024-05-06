@@ -4,10 +4,15 @@ import java.io.*;
 import java.nio.file.*;
 import java.security.*;
 
-public class ChecksumService {
+public class ChecksumCalculator {
     private static final int BUFFER_SIZE = 1024;
+    private String algorithm;
 
-    public String calculateChecksum(Path file, String algorithm) throws NoSuchAlgorithmException, IOException {
+    public ChecksumCalculator(String algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    public String calculateChecksum(Path file) throws NoSuchAlgorithmException, IOException {
         MessageDigest md = MessageDigest.getInstance(algorithm);
         try (InputStream is = Files.newInputStream(file);
             BufferedInputStream bis = new BufferedInputStream(is)) {

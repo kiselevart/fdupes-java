@@ -18,29 +18,38 @@ public class Main extends SscAssignment {
         options.addOption("f", true, "specifies path to folder, must be provided.");
 
         CommandLineParser parser = new DefaultParser();
-        CommandLine cmd = null;
-
         try {
-            cmd = parser.parse(options, args);
+            CommandLine cmd = parser.parse(options, args);
+            String pathArg = cmd.getOptionValue("f");
+            boolean printPaths = false;
+            boolean printCount = false;
+
+            if (pathArg != null) {
+                Path path = Paths.get(pathArg);
+                String algorithm = cmd.getOptionValue("a");
+                if (algorithm == null) {algorithm = "sha256";}
+
+                if (cmd.hasOption("c")) {
+                    printCount = true;
+                }
+                if (cmd.hasOption("p")) {
+                    printPaths = true;
+                }
+
+                FileCounter.countFiles(path);
+                ChecksumCalculator checksumCalculator = new ChecksumCalculator(algorithm);
+                DuplicateFinder duplicateFinder = new DuplicateFinder(checksumCalculator, printCount, printPaths);
+                duplicateFinder.countDuplicates(path);
+
+            }
+            else {
+                throw new ParseException("File path -f is required.");
+            }
+
         } catch (ParseException e) {
-            System.err.println("Error passing arguments " + e.getMessage());
-        }
-
-        String path = cmd.getOptionValue("p");
-        String algorithm = Optional.ofNullable(cmd.getOptionValue("a")).orElse("sha256");
-
-        ChecksumService checksumService = new ChecksumService();
-        FileSystemService fileSystemService = new FileSystemService();
-
-        try {
-            Map<String, List<Path>> duplicates = fileSystemService.findDuplicates(Paths.get(path), algorithm);
-            duplicates.forEach((checksum, paths) -> {
-                System.out.println("Checksum: " + checksum);
-                paths.forEach(System.out::println);
-                System.out.println();
-            });
-        } catch (IOException e) {
-            System.err.println("Error processing files: " + e.getMessage());
+            System.err.println("Error: " + e.getMessage());
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("dirwalker", options);
         }
     }
 }
