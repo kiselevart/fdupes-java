@@ -36,8 +36,6 @@ public class FileCounter {
             e.printStackTrace();
         }
 
-        System.out.println("Total number of files is: " + ValueFormatter.formattedValue(fileCount[0]));
-        System.out.println("Total number of directories is: " + ValueFormatter.formattedValue(directoryCount[0]));
-        System.out.println("Total size of all files is: " + ValueFormatter.formattedValue(totalSize[0]) + " bytes");
+        PrinterFunction.printFileInfo(fileCount, directoryCount, totalSize);
     }
 }

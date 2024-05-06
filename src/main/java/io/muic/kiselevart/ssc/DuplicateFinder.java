@@ -57,21 +57,11 @@ public class DuplicateFinder {
         }
     
         if (printPaths) {
-            System.out.println("Duplicate Paths:");
-            for (Map.Entry<String, List<String>> entry : duplicatePathsMap.entrySet()) {
-                List<String> paths = entry.getValue();
-                if (paths.size() > 1) {
-                    for (String duplicatePath : paths) {
-                        System.out.println(duplicatePath);
-                    }
-                    System.out.println();
-                }
-            }
+            PrinterFunction.printDuplicates(duplicatePathsMap);
         }
     
         if (printCount) {
-            int totalDuplicates = checksumMap.values().stream().mapToInt(count -> count > 1 ? count - 1 : 0).sum();
-            System.out.println("Total number of duplicate files: " + ValueFormatter.formattedValue(totalDuplicates));
+            PrinterFunction.printCount(checksumMap);
         }
     } 
 }
