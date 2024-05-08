@@ -10,22 +10,26 @@ import java.util.Map;
 
 public class DuplicateFinder {
     private ChecksumCalculator checksumCalculator;
-    private boolean printCount = false;
-    private boolean printPaths = false;
 
-    public DuplicateFinder(ChecksumCalculator checksumCalculator, boolean printCount, boolean printPaths) {
+    public DuplicateFinder(ChecksumCalculator checksumCalculator) {
         this.checksumCalculator = checksumCalculator;
-        this.printCount = printCount;
-        this.printPaths = printPaths;
     }
 
-    public void countDuplicates(Path path) {
+    public void countDuplicates(Path path, boolean printCount, boolean printPaths) {
         if (!printCount && !printPaths) {
             return;
         }
 
         Map<Long, List<Path>> duplicateSizes = pruneBySize(path);
-        countDuplicatesChecksum(path, duplicateSizes);
+        Map<String, List<Path>> checksumMap = countDuplicatesChecksum(path, duplicateSizes);
+
+        if (printPaths) {
+            PrinterFunction.printDuplicates(checksumMap);
+        }
+    
+        if (printCount) {
+            PrinterFunction.printCount(checksumMap);
+        }
     }
 
     private Map<Long, List<Path>> pruneBySize(Path path) {
@@ -52,7 +56,7 @@ public class DuplicateFinder {
         return duplicateSizes;
     }
 
-    private void countDuplicatesChecksum(Path path, Map<Long, List<Path>> duplicateSizes) {
+    private Map<String, List<Path>> countDuplicatesChecksum(Path path, Map<Long, List<Path>> duplicateSizes) {
         Map<String, List<Path>> checksumMap = new HashMap<>();
 
         for (List<Path> paths : duplicateSizes.values()) {
@@ -70,13 +74,6 @@ public class DuplicateFinder {
         }
 
         checksumMap.entrySet().removeIf(entry -> entry.getValue().size() == 1);
-    
-        if (printPaths) {
-            PrinterFunction.printDuplicates(checksumMap);
-        }
-    
-        if (printCount) {
-            PrinterFunction.printCount(checksumMap);
-        }
+        return checksumMap;
     } 
 }
