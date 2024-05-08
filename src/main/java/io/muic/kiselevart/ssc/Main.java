@@ -26,6 +26,7 @@ public class Main extends SscAssignment {
             }
 
             Path path = Paths.get(pathArg);
+            if (!Files.exists(path)) {throw new InvalidPathException(path.toString(), "This path does not exist");}
 
             String algorithm = cmd.getOptionValue("a", "sha256"); //defaults to sha256
             if (!validAlgorithms.contains(algorithm)) {
