@@ -19,6 +19,7 @@ public class DuplicateFinder {
         this.printPaths = printPaths;
     }
 
+    private Map<List<Path>> pruneBySize(Path path)
     public void countDuplicates(Path path) {
         if (!printCount && !printPaths) {
             return;
