@@ -3,7 +3,6 @@ package io.muic.kiselevart.ssc;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +17,15 @@ public class DuplicateFinder {
         this.checksumCalculator = checksumCalculator;
         this.printCount = printCount;
         this.printPaths = printPaths;
+    }
+
+    public void countDuplicates(Path path) {
+        if (!printCount && !printPaths) {
+            return;
+        }
+
+        Map<Long, List<Path>> duplicateSizes = pruneBySize(path);
+        countDuplicatesChecksum(path, duplicateSizes);
     }
 
     private Map<Long, List<Path>> pruneBySize(Path path) {
@@ -40,17 +48,11 @@ public class DuplicateFinder {
             e.printStackTrace();
         }
 
-        //removes all entries of size 1
         duplicateSizes.entrySet().removeIf(entry -> entry.getValue().size() == 1);
         return duplicateSizes;
     }
 
-    public void countDuplicates(Path path) {
-        if (!printCount && !printPaths) {
-            return;
-        }
-
-        Map<Long, List<Path>> duplicateSizes = pruneBySize(path);
+    private void countDuplicatesChecksum(Path path, Map<Long, List<Path>> duplicateSizes) {
         Map<String, List<Path>> checksumMap = new HashMap<>();
 
         for (List<Path> paths : duplicateSizes.values()) {
@@ -67,7 +69,6 @@ public class DuplicateFinder {
             }
         }
 
-        //removes all entries of size 1 again
         checksumMap.entrySet().removeIf(entry -> entry.getValue().size() == 1);
     
         if (printPaths) {

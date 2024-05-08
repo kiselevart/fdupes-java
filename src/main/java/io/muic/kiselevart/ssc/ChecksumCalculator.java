@@ -3,10 +3,9 @@ package io.muic.kiselevart.ssc;
 import java.io.*;
 import java.nio.file.*;
 import java.security.*;
-import java.util.Arrays;
 
 public class ChecksumCalculator {
-    private String algorithm;
+    public String algorithm;
 
     public ChecksumCalculator(String algorithm) {
         this.algorithm = algorithm;
@@ -38,7 +37,7 @@ public class ChecksumCalculator {
     private String calculateChecksumByteByByte(Path file) throws NoSuchAlgorithmException, IOException {
         try {
             byte[] content = Files.readAllBytes(file);
-            return Arrays.toString(content);
+            return bytesToHex(content);
         } catch (IOException e) {
             System.err.println("Error reading file: " + file.toString() + ". " + e.getMessage());
             throw new RuntimeException("Error reading file: " + file.toString(), e);
