@@ -1,27 +1,23 @@
 package io.muic.kiselevart.ssc;
 
 import java.util.*;
+import java.nio.file.*;
 
 public class PrinterFunction {
-    public static void printDuplicates(Map<String, List<String>> duplicatePaths) {
+    public static void printDuplicates(Map<String, List<Path>> checksumMap) {
         System.out.println("Duplicate Paths:");
-        for (Map.Entry<String, List<String>> entry : duplicatePaths.entrySet()) {
-            List<String> paths = entry.getValue();
-            if (paths.size() > 1) {
-                for (String duplicatePath : paths) {
-                    System.out.println(duplicatePath);
-                }
-                System.out.println();
+        for (List<Path> paths : checksumMap.values()) {
+            for (Path path : paths) {
+                System.out.println(path);
             }
+            System.out.println();
         }
     }
 
-    public static void printCount(Map<String, Integer> checksumMap) {
+    public static void printCount(Map<String, List<Path>> checksumMap) {
         int totalDuplicates = 0;
-        for (int count : checksumMap.values()) {
-            if (count > 1) {
-                totalDuplicates += count - 1;
-            }
+        for (List<Path> paths : checksumMap.values()) {
+            totalDuplicates += paths.size() -1;
         }
         System.out.println("Total number of duplicate files: " + ValueFormatter.formattedValue(totalDuplicates));
     }
