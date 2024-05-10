@@ -15,13 +15,19 @@ public class DuplicateFinder {
         this.checksumCalculator = checksumCalculator;
     }
 
+    /**
+     * Runs pruneBySize and countDuplicatesChecksum after to find duplicate files
+     * @param path The path to search through
+     * @param printCount Flag indicating whether to print the number of duplicates
+     * @param printPaths Flag indicating whether to print the duplicate paths
+     */
     public void countDuplicates(Path path, boolean printCount, boolean printPaths) {
         if (!printCount && !printPaths) {
             return;
         }
 
         Map<Long, List<Path>> duplicateSizes = pruneBySize(path);
-        Map<String, List<Path>> checksumMap = countDuplicatesChecksum(path, duplicateSizes);
+        Map<String, List<Path>> checksumMap = countDuplicatesChecksum(duplicateSizes);
 
         if (printPaths) {
             PrinterFunction.printDuplicates(checksumMap);
@@ -32,6 +38,11 @@ public class DuplicateFinder {
         }
     }
 
+    /**
+     * Uses walkFileTree to traverse path and find files with duplicate file sizes
+     * @param path The path to search through 
+     * @return A map with file size as the key, and a list of the files with that size as the value
+     */
     private Map<Long, List<Path>> pruneBySize(Path path) {
         Map<Long, List<Path>> duplicateSizes = new HashMap<>();
         try {
@@ -56,7 +67,12 @@ public class DuplicateFinder {
         return duplicateSizes;
     }
 
-    private Map<String, List<Path>> countDuplicatesChecksum(Path path, Map<Long, List<Path>> duplicateSizes) {
+    /**
+     * Finds duplicates in given list using the configured checksum algorithm
+     * @param duplicateSizes Map of file paths keyed by their size
+     * @return A map of file paths keyed by their hashcode
+     */
+    private Map<String, List<Path>> countDuplicatesChecksum(Map<Long, List<Path>> duplicateSizes) {
         Map<String, List<Path>> checksumMap = new HashMap<>();
 
         for (List<Path> paths : duplicateSizes.values()) {

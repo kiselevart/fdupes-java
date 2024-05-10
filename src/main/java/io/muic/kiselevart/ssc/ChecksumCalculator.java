@@ -17,7 +17,9 @@ public class ChecksumCalculator {
             return calculateChecksumByteByByte(file);
         } else if (algo.equals("md5") || algo.equals("sha256")) {
             return calculateChecksumUsingBuffer(file);
-        } else {throw new NoSuchAlgorithmException("Invalid Algorithm");}
+        } else {
+            throw new NoSuchAlgorithmException("Invalid Algorithm");
+        }
     }
 
     private String calculateChecksumUsingBuffer(Path file) throws NoSuchAlgorithmException, IOException {
