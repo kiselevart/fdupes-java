@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>kiselevart</groupId>
-    <artifactId>dir-walker-cli</artifactId>
+    <artifactId>jdupes</artifactId>
     <version>1.0</version>
 
     <dependencies>
@@ -37,7 +37,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>io.muic.kiselevart.ssc.Main</mainClass>
+                            <mainClass>kiselevart.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
