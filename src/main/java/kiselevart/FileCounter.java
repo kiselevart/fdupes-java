@@ -1,8 +1,11 @@
-package io.muic.kiselevart.ssc;
+package kiselevart;
 
-import java.io.*;
-import java.nio.file.*;
-import java.nio.file.attribute.*;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 
 public class FileCounter {
     public static void countFiles(Path path) {

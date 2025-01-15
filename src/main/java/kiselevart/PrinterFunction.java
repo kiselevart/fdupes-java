@@ -1,7 +1,8 @@
-package io.muic.kiselevart.ssc;
+package kiselevart;
 
-import java.util.*;
-import java.nio.file.*;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
 
 public class PrinterFunction {
     public static void printDuplicates(Map<String, List<Path>> checksumMap) {

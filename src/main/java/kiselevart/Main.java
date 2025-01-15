@@ -1,12 +1,21 @@
-package io.muic.kiselevart.ssc;
+package kiselevart;
 
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
-import io.muzoo.ssc.assignment.tracker.SscAssignment;
-import org.apache.commons.cli.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
-public class Main extends SscAssignment {
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
+public class Main {
     public static void main(String[] args) {
         Options options = new Options();
         options.addOption("c", "count-duplicates", false, "prints the total count of duplicate files");

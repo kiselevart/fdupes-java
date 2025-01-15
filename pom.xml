@@ -4,16 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.muic.kiselevart.ssc</groupId>
+    <groupId>kiselevart</groupId>
     <artifactId>dir-walker-cli</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
 
     <dependencies>
-        <dependency>
-            <groupId>io.muzoo.ssc</groupId>
-            <artifactId>assignment-tracker</artifactId>
-            <version>1.1</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
         <dependency>
             <groupId>commons-io</groupId>
@@ -27,13 +22,6 @@
             <version>1.7.0</version>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>m2.ssc.muzoo.io</id>
-            <url>https://m2.ssc.muzoo.io</url>
-        </repository>
-    </repositories>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

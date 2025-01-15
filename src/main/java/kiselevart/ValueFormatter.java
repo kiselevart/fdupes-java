@@ -1,4 +1,4 @@
-package io.muic.kiselevart.ssc;
+package kiselevart;
 
 public class ValueFormatter {
     public static String formattedValue(long number) { 

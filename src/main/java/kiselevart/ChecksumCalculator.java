@@ -1,8 +1,12 @@
-package io.muic.kiselevart.ssc;
+package kiselevart;
 
-import java.io.*;
-import java.nio.file.*;
-import java.security.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class ChecksumCalculator {
     public String algorithm;
