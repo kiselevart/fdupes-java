@@ -1,11 +1,23 @@
 # jdupes: An fdupes clone written in Java
-### USAGE:
-- Navigate to the root directory (/fdupes-java)
-- Create the jar binary:
+### Setup:
+--------------------------------------------------------------------
+Navigate to the root directory (/fdupes-java)
+Create the jar binary:
 ```bash
-mvn compile
+mvn package
 ```
-- Run the binary:
+To run the binary:
+```bash
+java -jar target/jdupes-1.0-jar-with-dependencies.jar   
+```
+Default command:
 ```bash
 java -jar target/jdupes-1.0-jar-with-dependencies.jar -f ../ -a bbb -p -c   
 ```
+
+### Options:
+--------------------------------------------------------------------
+- -f: prints the total count of duplicate files 
+- -a: specifies the algorithm used (bbb, sha256, md5)
+- -p prints relative paths of all duplicates grouped together
+- -f specifies path to folder, must be provided.
